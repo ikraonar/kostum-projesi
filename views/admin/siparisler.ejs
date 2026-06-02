@@ -1,0 +1,75 @@
+<%- include('../partials/header') %>
+
+<div class="admin-layout">
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <h2 class="admin-title">Sipariş Yönetimi</h2>
+
+    <% if (siparisler.length === 0) { %>
+      <p class="empty-msg">Henüz sipariş yok.</p>
+    <% } else { %>
+      <div class="admin-section">
+        <table class="admin-table siparisler-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Kullanıcı</th>
+              <th>Kostümler</th>
+              <th>Tarih Aralığı</th>
+              <th>Toplam</th>
+              <th>Durum</th>
+              <th>Güncelle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% siparisler.forEach(s => { %>
+              <tr class="<%= s.durum === 'beklemede' ? 'siparis-row-beklemede' : '' %>">
+                <td><%= s.id %></td>
+                <td>
+                  <strong><%= s.user.adSoyad %></strong>
+                  <span class="text-muted d-block"><%= s.user.email %></span>
+                </td>
+                <td>
+                  <ul class="siparis-items">
+                    <% s.items.forEach(item => { %>
+                      <li>
+                        <%= item.costume.ad %> &times; <%= item.adet %>
+                        <% if (item.birimler && item.birimler.length) { %>
+                          <ul class="item-kod-list">
+                            <% item.birimler.forEach(b => { %>
+                              <li><span class="kod-badge" title="Ürün kodu"><%= b.kod %></span></li>
+                            <% }) %>
+                          </ul>
+                        <% } %>
+                      </li>
+                    <% }) %>
+                  </ul>
+                </td>
+                <td class="text-muted">
+                  <%= new Date(s.baslangic).toLocaleDateString('tr-TR') %><br>
+                  <%= new Date(s.bitis).toLocaleDateString('tr-TR') %>
+                </td>
+                <td><strong><%= s.toplamFiyat.toFixed(2) %> ₺</strong></td>
+                <td><span class="durum-badge durum-<%= s.durum %>"><%= s.durum %></span></td>
+                <td>
+                  <form method="POST" action="/admin/siparisler/<%= s.id %>/durum">
+                    <%- include('../partials/csrf') %>
+                    <select name="durum" class="durum-select">
+                      <% ['beklemede','onaylandi','tamamlandi','iptal'].forEach(d => { %>
+                        <option value="<%= d %>" <%= s.durum === d ? 'selected' : '' %>><%= d %></option>
+                      <% }) %>
+                    </select>
+                    <button type="submit" class="btn-submit-sm">Kaydet</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

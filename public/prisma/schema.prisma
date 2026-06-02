@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id      Int     @id @default(autoincrement())
+  adSoyad String
+  email   String  @unique
+  sifre   String
+  rol     String  @default("user")
+  orders  Order[]
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  ad       String
+  costumes Costume[]
+}
+
+model Costume {
+  id         Int         @id @default(autoincrement())
+  ad         String
+  kategoriId Int
+  beden      String
+  fiyat      Float
+  stok       Int
+  gorsel     String?
+  kategori   Category    @relation(fields: [kategoriId], references: [id])
+  orderItems OrderItem[]
+}
+
+model Order {
+  id          Int         @id @default(autoincrement())
+  userId      Int
+  toplamFiyat Float
+  baslangic   DateTime
+  bitis       DateTime
+  durum       String      @default("beklemede")
+  user        User        @relation(fields: [userId], references: [id])
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id        Int             @id @default(autoincrement())
+  orderId   Int
+  costumeId Int
+  adet      Int
+  order     Order           @relation(fields: [orderId], references: [id])
+  costume   Costume         @relation(fields: [costumeId], references: [id])
+  birimler  OrderItemUnit[]
+}
+
+model OrderItemUnit {
+  id          Int       @id @default(autoincrement())
+  orderItemId Int
+  kod         String    @unique
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+}

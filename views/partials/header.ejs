@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="KostümSis — Türkiye'nin kostüm kiralama ve satış platformu. Yüzlerce kostüm arasından seçim yapın.">
+  <meta name="theme-color" content="#2D1B4E" id="meta-theme-color">
+  <script>
+    (function () {
+      var t = localStorage.getItem('kostumsis-theme');
+      if (t === 'dark' || t === 'light') {
+        document.documentElement.setAttribute('data-theme', t);
+        var m = document.getElementById('meta-theme-color');
+        if (m) m.setAttribute('content', t === 'dark' ? '#0f0d14' : '#2D1B4E');
+      }
+    })();
+  </script>
+  <title>KostümSis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="navbar-brand">KostümSis</a>
+
+  <button class="nav-toggle" aria-label="Menüyü aç">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <div class="navbar-links">
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Tema değiştir">
+      <span class="theme-toggle-icon" id="theme-toggle-icon" aria-hidden="true">☀</span>
+      <span id="theme-toggle-label">Açık</span>
+    </button>
+    <a href="/kostumler">Kostümler</a>
+    <% if (user) { %>
+      <a href="/sepet">Sepet</a>
+      <a href="/profil"><%= user.adSoyad %></a>
+      <% if (user.rol === 'admin') { %>
+        <a href="/admin">Admin</a>
+      <% } %>
+      <form method="POST" action="/auth/cikis" class="nav-logout-form">
+        <%- include('csrf') %>
+        <button type="submit" class="btn-outline nav-logout-btn">Çıkış</button>
+      </form>
+    <% } else { %>
+      <a href="/giris" class="btn-primary">Giriş / Kayıt</a>
+    <% } %>
+  </div>
+</nav>
+
+<% if (flash && (flash.hata || flash.basari)) { %>
+  <div class="flash-bar">
+    <% if (flash.hata) { %><div class="alert alert-hata"><%= flash.hata %></div><% } %>
+    <% if (flash.basari) { %><div class="alert alert-basari"><%= flash.basari %></div><% } %>
+  </div>
+<% } %>
+
+<main class="container">

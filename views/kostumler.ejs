@@ -1,0 +1,67 @@
+<%- include('partials/header') %>
+
+<div class="catalog-layout">
+
+  <aside class="filter-panel">
+    <h3>Filtrele</h3>
+    <form method="GET" action="/kostumler">
+      <div class="filter-group">
+        <label>Kategori</label>
+        <select name="kategori">
+          <option value="">Tümü</option>
+          <% kategoriler.forEach(k => { %>
+            <option value="<%= k.id %>" <%= seciliKategori == k.id ? 'selected' : '' %>>
+              <%= k.ad %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Beden</label>
+        <select name="beden">
+          <option value="">Tümü</option>
+          <% ['S', 'M', 'L', 'XL'].forEach(b => { %>
+            <option value="<%= b %>" <%= seciliBeden === b ? 'selected' : '' %>><%= b %></option>
+          <% }) %>
+        </select>
+      </div>
+      <button type="submit" class="btn-filter">Uygula</button>
+      <a href="/kostumler" class="btn-filter-reset">Sıfırla</a>
+    </form>
+  </aside>
+
+  <section class="costume-grid-wrapper">
+    <div class="catalog-header">
+      <h2>Kostümler <span class="count">(<%= kostumler.length %>)</span></h2>
+    </div>
+
+    <% if (kostumler.length === 0) { %>
+      <p class="empty-msg">Filtreye uygun kostüm bulunamadı.</p>
+    <% } else { %>
+      <div class="costume-grid">
+        <% kostumler.forEach(k => { %>
+          <a href="/kostumler/<%= k.id %>" class="costume-card">
+            <div class="costume-img">
+              <% if (k.gorsel) { %>
+                <img src="<%= k.gorsel %>" alt="<%= k.ad %>" loading="lazy" decoding="async">
+              <% } else { %>
+                <div class="img-placeholder"><%= k.ad[0] %></div>
+              <% } %>
+              <% if (k.stok === 0) { %>
+                <span class="badge-stok-yok">Stok Yok</span>
+              <% } %>
+            </div>
+            <div class="costume-info">
+              <span class="costume-cat"><%= k.kategori.ad %> &bull; <%= k.beden %></span>
+              <h4><%= k.ad %></h4>
+              <span class="costume-price"><%= k.fiyat %> ₺</span>
+            </div>
+          </a>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+
+</div>
+
+<%- include('partials/footer') %>

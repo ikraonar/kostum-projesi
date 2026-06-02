@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+
+<div class="page-header">
+  <h2>Sepetim</h2>
+</div>
+
+<% if (items.length === 0) { %>
+  <div class="empty-cart">
+    <p>Sepetiniz boş.</p>
+    <a href="/kostumler" class="btn-primary">Kostümlere Göz At</a>
+  </div>
+<% } else { %>
+  <div class="cart-layout">
+
+    <div class="cart-items">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Kostüm</th>
+            <th>Birim Fiyat</th>
+            <th>Adet</th>
+            <th>Ara Toplam</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(item => { %>
+            <tr>
+              <td>
+                <div class="cart-item-name">
+                  <a href="/kostumler/<%= item.costumeId %>"><%= item.kostum.ad %></a>
+                  <span class="cart-item-meta"><%= item.kostum.beden %></span>
+                </div>
+              </td>
+              <td><%= item.kostum.fiyat %> ₺</td>
+              <td><%= item.adet %></td>
+              <td><strong><%= (item.kostum.fiyat * item.adet).toFixed(2) %> ₺</strong></td>
+              <td>
+                <form method="POST" action="/sepet/sil/<%= item.costumeId %>">
+                  <%- include('partials/csrf') %>
+                  <button type="submit" class="btn-sil">Çıkar</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="total-label">Toplam</td>
+            <td colspan="2" class="total-price"><%= toplam.toFixed(2) %> ₺</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="order-panel">
+      <h3>Sipariş Ver</h3>
+      <form method="POST" action="/siparis/olustur">
+        <%- include('partials/csrf') %>
+        <div class="form-group">
+          <label for="baslangic">Başlangıç Tarihi</label>
+          <input type="date" id="baslangic" name="baslangic" required
+            min="<%= new Date().toISOString().split('T')[0] %>">
+        </div>
+        <div class="form-group">
+          <label for="bitis">Bitiş Tarihi</label>
+          <input type="date" id="bitis" name="bitis" required
+            min="<%= new Date().toISOString().split('T')[0] %>">
+        </div>
+        <div class="order-summary">
+          <span>Toplam:</span>
+          <strong><%= toplam.toFixed(2) %> ₺</strong>
+        </div>
+        <button type="submit" class="btn-submit">Siparişi Onayla</button>
+      </form>
+    </div>
+
+  </div>
+<% } %>
+
+<script type="module">
+  const bas = document.getElementById('baslangic')
+  const bit = document.getElementById('bitis')
+  if (bas && bit) {
+    bas.addEventListener('change', () => {
+      if (bit.value && bit.value <= bas.value) bit.value = ''
+      bit.min = bas.value
+    })
+  }
+</script>
+
+<%- include('partials/footer') %>

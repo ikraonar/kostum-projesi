@@ -1,0 +1,9 @@
+<nav class="admin-nav">
+  <a href="/admin" class="admin-nav-brand">Admin Panel</a>
+  <ul>
+    <li><a href="/admin" class="<%= typeof adminPage !== 'undefined' && adminPage === 'dashboard' ? 'active' : '' %>">Dashboard</a></li>
+    <li><a href="/admin/kostumler" class="<%= typeof adminPage !== 'undefined' && adminPage === 'kostumler' ? 'active' : '' %>">Kostümler</a></li>
+    <li><a href="/admin/siparisler" class="<%= typeof adminPage !== 'undefined' && adminPage === 'siparisler' ? 'active' : '' %>">Siparişler</a></li>
+    <li><a href="/" class="admin-nav-exit">← Siteye Dön</a></li>
+  </ul>
+</nav>

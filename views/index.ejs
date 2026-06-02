@@ -1,0 +1,24 @@
+<%- include('partials/header') %>
+
+<div class="hero">
+  <span class="hero-eyebrow">Türkiye'nin Kostüm Platformu</span>
+  <h1>Her Etkinlik İçin<br>Mükemmel Kostüm</h1>
+  <p>Yüzlerce seçenek arasından kolayca filtreleyin, kiralayın ya da satın alın.</p>
+  <div class="hero-cta">
+    <a href="/kostumler" class="btn-primary">Kostümlere Göz At</a>
+    <% if (!user) { %>
+      <a href="/giris" class="btn-ghost">Giriş Yap</a>
+    <% } %>
+  </div>
+</div>
+
+<% if (user) { %>
+  <div class="welcome-banner">
+    Hoş geldiniz, <strong><%= user.adSoyad %></strong>!
+    <% if (user.rol === 'admin') { %>
+      &nbsp;— <a href="/admin">Admin Paneline Git</a>
+    <% } %>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

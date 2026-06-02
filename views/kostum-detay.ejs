@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+
+<div class="detail-wrapper">
+  <a href="/kostumler" class="back-link">&larr; Kostümlere Dön</a>
+
+  <div class="detail-card">
+    <div class="detail-img">
+      <% if (kostum.gorsel) { %>
+        <img src="<%= kostum.gorsel %>" alt="<%= kostum.ad %>" loading="eager" fetchpriority="high">
+      <% } else { %>
+        <div class="img-placeholder large"><%= kostum.ad[0] %></div>
+      <% } %>
+    </div>
+
+    <div class="detail-info">
+      <span class="detail-cat"><%= kostum.kategori.ad %></span>
+      <h1 class="detail-title"><%= kostum.ad %></h1>
+
+      <div class="detail-meta">
+        <div class="meta-item">
+          <span class="meta-label">Beden</span>
+          <span class="meta-value"><%= kostum.beden %></span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Fiyat</span>
+          <span class="meta-value price"><%= kostum.fiyat %> ₺</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Stok</span>
+          <% if (kostum.stok > 0) { %>
+            <span class="badge-stok-var"><%= kostum.stok %> adet mevcut</span>
+          <% } else { %>
+            <span class="badge-stok-yok">Stok Tükendi</span>
+          <% } %>
+        </div>
+      </div>
+
+      <% if (kostum.stok > 0) { %>
+        <% if (user) { %>
+          <form method="POST" action="/sepet/ekle">
+            <%- include('partials/csrf') %>
+            <input type="hidden" name="costumeId" value="<%= kostum.id %>">
+            <div class="form-group inline">
+              <label>Adet</label>
+              <input type="number" name="adet" value="1" min="1" max="<%= kostum.stok %>">
+            </div>
+            <button type="submit" class="btn-submit">Sepete Ekle</button>
+          </form>
+        <% } else { %>
+          <a href="/giris" class="btn-primary">Sepete eklemek için giriş yapın</a>
+        <% } %>
+      <% } else { %>
+        <button class="btn-submit" disabled>Stok Yok</button>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

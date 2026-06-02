@@ -1,0 +1,85 @@
+<%- include('partials/header') %>
+
+<div class="profil-layout">
+
+  <aside class="profil-sidebar">
+    <div class="profil-avatar"><%= profilUser.adSoyad[0].toUpperCase() %></div>
+    <div class="profil-meta">
+      <strong><%= profilUser.adSoyad %></strong>
+      <span><%= profilUser.email %></span>
+      <span class="rol-badge rol-<%= profilUser.rol %>"><%= profilUser.rol %></span>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Bilgileri Güncelle</h4>
+      <form method="POST" action="/profil/guncelle">
+        <%- include('partials/csrf') %>
+        <div class="form-group">
+          <label>Ad Soyad</label>
+          <input type="text" name="adSoyad" value="<%= profilUser.adSoyad %>" required>
+        </div>
+        <button type="submit" class="btn-submit">Kaydet</button>
+      </form>
+    </div>
+
+    <div class="sidebar-card">
+      <h4>Şifre Değiştir</h4>
+      <form method="POST" action="/profil/sifre">
+        <%- include('partials/csrf') %>
+        <div class="form-group">
+          <label>Mevcut Şifre</label>
+          <input type="password" name="eskiSifre" required placeholder="••••••">
+        </div>
+        <div class="form-group">
+          <label>Yeni Şifre</label>
+          <input type="password" name="yeniSifre" required placeholder="En az 6 karakter">
+        </div>
+        <button type="submit" class="btn-submit">Güncelle</button>
+      </form>
+    </div>
+  </aside>
+
+  <section class="profil-main">
+    <h2>Sipariş Geçmişim</h2>
+
+    <% if (orders.length === 0) { %>
+      <p class="empty-msg">Henüz siparişiniz yok. <a href="/kostumler">Kostümlere göz atın.</a></p>
+    <% } else { %>
+      <% orders.forEach(order => { %>
+        <div class="order-card">
+          <div class="order-card-header">
+            <div>
+              <span class="order-id">#<%= order.id %></span>
+              <span class="order-dates">
+                <%= new Date(order.baslangic).toLocaleDateString('tr-TR') %> –
+                <%= new Date(order.bitis).toLocaleDateString('tr-TR') %>
+              </span>
+            </div>
+            <div class="order-card-right">
+              <span class="durum-badge durum-<%= order.durum %>"><%= order.durum %></span>
+              <strong class="order-total"><%= order.toplamFiyat.toFixed(2) %> ₺</strong>
+            </div>
+          </div>
+          <ul class="order-items-list">
+            <% order.items.forEach(item => { %>
+              <li>
+                <a href="/kostumler/<%= item.costumeId %>"><%= item.costume.ad %></a>
+                <span class="item-meta"><%= item.costume.beden %> &bull; <%= item.adet %> adet &bull; <%= (item.costume.fiyat * item.adet).toFixed(2) %> ₺</span>
+                <% if (item.birimler && item.birimler.length) { %>
+                  <ul class="item-kod-list">
+                    <% item.birimler.forEach(b => { %>
+                      <li><span class="kod-badge" title="Kiralama kodu"><%= b.kod %></span></li>
+                    <% }) %>
+                  </ul>
+                <% } %>
+              </li>
+            <% }) %>
+          </ul>
+        </div>
+      <% }) %>
+    <% } %>
+  </section>
+
+</div>
+
+<%- include('partials/footer') %>

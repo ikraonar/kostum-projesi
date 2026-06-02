@@ -1,0 +1,154 @@
+<%- include('../partials/header') %>
+
+<div class="admin-layout">
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <h2 class="admin-title">Kostüm Yönetimi</h2>
+
+    <!-- Kostüm Listesi -->
+    <div class="admin-section">
+      <h3>Mevcut Kostümler (<%= kostumler.length %>)</h3>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ad</th>
+            <th>Kategori</th>
+            <th>Beden</th>
+            <th>Fiyat</th>
+            <th>Stok</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% kostumler.forEach(k => { %>
+            <tr>
+              <td><%= k.id %></td>
+              <td>
+                <a href="/kostumler/<%= k.id %>" class="table-link"><%= k.ad %></a>
+                <% if (k.gorsel) { %>
+                  <span class="gorsel-dot" title="<%= k.gorsel %>">🖼</span>
+                <% } %>
+              </td>
+              <td><%= k.kategori.ad %></td>
+              <td><%= k.beden %></td>
+              <td><%= k.fiyat %> ₺</td>
+              <td class="<%= k.stok === 0 ? 'stok-yok' : '' %>"><%= k.stok %></td>
+              <td class="action-cell">
+                <!-- Düzenle -->
+                <button class="btn-edit" onclick="toggleEdit(<%= k.id %>)">Düzenle</button>
+                <!-- Sil -->
+                <form method="POST" action="/admin/kostumler/<%= k.id %>/sil"
+                      onsubmit="return confirm('<%= k.ad %> silinsin mi?')">
+                  <%- include('../partials/csrf') %>
+                  <button type="submit" class="btn-delete">Sil</button>
+                </form>
+              </td>
+            </tr>
+            <!-- Satır içi düzenleme formu -->
+            <tr id="edit-<%= k.id %>" class="edit-row" style="display:none">
+              <td colspan="7">
+                <form method="POST" action="/admin/kostumler/<%= k.id %>/guncelle" class="inline-edit-form">
+                  <%- include('../partials/csrf') %>
+                  <div class="inline-edit-grid">
+                    <div class="form-group">
+                      <label>Ad</label>
+                      <input type="text" name="ad" value="<%= k.ad %>" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Kategori</label>
+                      <select name="kategoriId" required>
+                        <% kategoriler.forEach(kat => { %>
+                          <option value="<%= kat.id %>" <%= kat.id === k.kategoriId ? 'selected' : '' %>><%= kat.ad %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Beden</label>
+                      <select name="beden" required>
+                        <% ['S','M','L','XL'].forEach(b => { %>
+                          <option value="<%= b %>" <%= k.beden === b ? 'selected' : '' %>><%= b %></option>
+                        <% }) %>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Fiyat (₺)</label>
+                      <input type="number" name="fiyat" value="<%= k.fiyat %>" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Stok</label>
+                      <input type="number" name="stok" value="<%= k.stok %>" min="0" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Görsel URL</label>
+                      <input type="url" name="gorsel" value="<%= k.gorsel || '' %>" placeholder="https://...">
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button type="submit" class="btn-submit-sm">Kaydet</button>
+                    <button type="button" class="btn-cancel" onclick="toggleEdit(<%= k.id %>)">İptal</button>
+                  </div>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Yeni Kostüm Ekle -->
+    <div class="admin-section">
+      <h3>Yeni Kostüm Ekle</h3>
+      <form method="POST" action="/admin/kostumler/ekle" class="add-form">
+        <%- include('../partials/csrf') %>
+        <div class="inline-edit-grid">
+          <div class="form-group">
+            <label>Ad <span class="req">*</span></label>
+            <input type="text" name="ad" required placeholder="Kostüm adı">
+          </div>
+          <div class="form-group">
+            <label>Kategori <span class="req">*</span></label>
+            <select name="kategoriId" required>
+              <option value="">Seçin</option>
+              <% kategoriler.forEach(kat => { %>
+                <option value="<%= kat.id %>"><%= kat.ad %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Beden <span class="req">*</span></label>
+            <select name="beden" required>
+              <option value="">Seçin</option>
+              <% ['S','M','L','XL'].forEach(b => { %>
+                <option value="<%= b %>"><%= b %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Fiyat (₺) <span class="req">*</span></label>
+            <input type="number" name="fiyat" step="0.01" min="0" required placeholder="0.00">
+          </div>
+          <div class="form-group">
+            <label>Stok <span class="req">*</span></label>
+            <input type="number" name="stok" min="0" required placeholder="0">
+          </div>
+          <div class="form-group">
+            <label>Görsel URL</label>
+            <input type="url" name="gorsel" placeholder="https://...">
+          </div>
+        </div>
+        <button type="submit" class="btn-submit">Kostüm Ekle</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  window.toggleEdit = function(id) {
+    const row = document.getElementById('edit-' + id)
+    row.style.display = row.style.display === 'none' ? 'table-row' : 'none'
+  }
+</script>
+
+<%- include('../partials/footer') %>

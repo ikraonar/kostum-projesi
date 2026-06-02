@@ -1,0 +1,63 @@
+<%- include('../partials/header') %>
+
+<div class="admin-layout">
+  <%- include('../partials/admin-nav') %>
+
+  <div class="admin-content">
+    <h2 class="admin-title">Dashboard</h2>
+
+    <div class="stat-cards">
+      <div class="stat-card">
+        <span class="stat-num"><%= kostumSayisi %></span>
+        <span class="stat-label">Toplam Kostüm</span>
+        <a href="/admin/kostumler" class="stat-link">Yönet &rarr;</a>
+      </div>
+      <div class="stat-card">
+        <span class="stat-num"><%= siparisSayisi %></span>
+        <span class="stat-label">Toplam Sipariş</span>
+        <a href="/admin/siparisler" class="stat-link">Görüntüle &rarr;</a>
+      </div>
+      <div class="stat-card stat-card-warn">
+        <span class="stat-num"><%= bekleyenSayisi %></span>
+        <span class="stat-label">Bekleyen Sipariş</span>
+        <a href="/admin/siparisler" class="stat-link">İncele &rarr;</a>
+      </div>
+    </div>
+
+    <div class="admin-section">
+      <h3>Son Siparişler</h3>
+      <% if (sonSiparisler.length === 0) { %>
+        <p class="empty-msg">Henüz sipariş yok.</p>
+      <% } else { %>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Kullanıcı</th>
+              <th>Toplam</th>
+              <th>Durum</th>
+              <th>Tarih Aralığı</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% sonSiparisler.forEach(s => { %>
+              <tr>
+                <td><%= s.id %></td>
+                <td><%= s.user.adSoyad %></td>
+                <td><%= s.toplamFiyat.toFixed(2) %> ₺</td>
+                <td><span class="durum-badge durum-<%= s.durum %>"><%= s.durum %></span></td>
+                <td class="text-muted">
+                  <%= new Date(s.baslangic).toLocaleDateString('tr-TR') %> –
+                  <%= new Date(s.bitis).toLocaleDateString('tr-TR') %>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+        <a href="/admin/siparisler" class="admin-link-more">Tüm siparişleri gör &rarr;</a>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
